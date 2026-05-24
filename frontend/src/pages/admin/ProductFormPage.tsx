@@ -4,28 +4,48 @@ import { ChevronLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ProductForm } from '@/components/admin/ProductForm'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
-import { useAdminProduct, useCreateProduct, useUpdateProduct } from '@/hooks/useAdmin'
+import { useAdminProduct, useCreateProduct, useUpdateProduct, useUploadProductImage } from '@/hooks/useAdmin'
 import { toast } from '@/components/ui/use-toast'
 
 export default function ProductFormPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const isEdit = id !== 'new' && !!id
+  const isEdit = !!id && id !== 'new'
 
   const { data: product, isLoading } = useAdminProduct(isEdit ? Number(id) : 0)
   const createProduct = useCreateProduct()
   const updateProduct = useUpdateProduct()
+  const uploadImage = useUploadProductImage()
 
-  const handleSubmit = async (data: Record<string, unknown>) => {
+  const handleSubmit = async (
+    data: Parameters<React.ComponentProps<typeof ProductForm>['onSubmit']>[0],
+    images: File[],
+    primaryIndex: number
+  ) => {
     try {
+      let savedProduct: Awaited<ReturnType<typeof createProduct.mutateAsync>> | undefined
+
       if (isEdit && product) {
-        await updateProduct.mutateAsync({ id: product.id, ...data })
+        savedProduct = await updateProduct.mutateAsync({ id: product.id, ...data })
         toast({ title: 'Product updated' })
       } else {
-        await createProduct.mutateAsync(data)
+        savedProduct = await createProduct.mutateAsync(data)
         toast({ title: 'Product created' })
       }
+
+      // Upload images if any
+      if (images.length > 0 && savedProduct) {
+        const formData = new FormData()
+        images.forEach((file, i) => {
+          formData.append('images[]', file)
+          if (i === primaryIndex) {
+            formData.append('primary_index', String(i))
+          }
+        })
+        await uploadImage.mutateAsync({ productId: savedProduct.id, formData })
+      }
+
       navigate('/admin/products')
     } catch {
       toast({ title: t('common.error'), variant: 'destructive' })

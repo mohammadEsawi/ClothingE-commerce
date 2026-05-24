@@ -22,7 +22,9 @@ export function BottomNav() {
   ]
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden items-center justify-around bg-white border-t border-gray-200 pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden items-center justify-around bg-white border-t border-gray-200 h-16"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
       {navItems.map(({ to, icon: Icon, label, badge }) => {
         const isActive = location.pathname === to
 
@@ -31,7 +33,7 @@ export function BottomNav() {
             key={to}
             to={to}
             className={cn(
-              'relative flex flex-col items-center justify-center flex-1 py-2 gap-0.5 transition-colors',
+              'relative flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-colors',
               isActive ? 'text-primary-600' : 'text-gray-500'
             )}
           >
@@ -57,9 +59,7 @@ export function BottomNav() {
       {/* Cart button */}
       <button
         onClick={toggleCart}
-        className={cn(
-          'relative flex flex-col items-center justify-center flex-1 py-2 gap-0.5 transition-colors text-gray-500'
-        )}
+        className="relative flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-colors text-gray-500"
       >
         <div className="relative">
           <ShoppingCart className="h-5 w-5" />

@@ -9,22 +9,27 @@ import { EmptyState } from '@/components/shared/EmptyState'
 import { useCartStore } from '@/store/cartStore'
 import { formatPrice } from '@/lib/utils'
 
-export function CartDrawer() {
-  const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
-  const lang = i18n.language
-  const { items, isOpen, closeCart, total, clearCart } = useCartStore()
-
-  const FREE_SHIPPING_THRESHOLD = 200
-  const subtotal = items.reduce((sum, item) => {
+function calcSubtotal(items: ReturnType<typeof useCartStore>['items']): number {
+  return items.reduce((sum, item) => {
     const price =
       item.variant.price_override ??
       item.variant.product.sale_price ??
       item.variant.product.base_price
     return sum + price * item.quantity
   }, 0)
+}
+
+export function CartDrawer() {
+  const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
+  const lang = i18n.language
+  const { items, isOpen, closeCart } = useCartStore()
+
+  const FREE_SHIPPING_THRESHOLD = 200
+  const subtotal = calcSubtotal(items)
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 30
   const orderTotal = subtotal + shipping
+  const itemCount = items.reduce((s, i) => s + i.quantity, 0)
 
   const handleCheckout = () => {
     closeCart()
@@ -41,7 +46,7 @@ export function CartDrawer() {
               {t('cart.your_cart')}
               {items.length > 0 && (
                 <span className="text-sm font-normal text-gray-500">
-                  ({items.reduce((s, i) => s + i.quantity, 0)} {t('common.items')})
+                  ({itemCount} {t('common.items')})
                 </span>
               )}
             </SheetTitle>
