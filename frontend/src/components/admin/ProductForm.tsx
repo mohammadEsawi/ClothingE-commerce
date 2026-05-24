@@ -30,7 +30,7 @@ const productSchema = z.object({
   is_active: z.boolean().default(true)
 })
 
-type ProductFormValues = z.infer<typeof productSchema>
+export type ProductFormValues = z.infer<typeof productSchema>
 
 interface ProductFormProps {
   defaultValues?: Partial<Product>
@@ -221,7 +221,7 @@ export function ProductForm({
 
       {/* Variants */}
       <div className="rounded-xl border bg-white p-5">
-        <VariantManager onChange={() => {}} />
+        <VariantManager onChange={() => { /* variants handled on submit */ }} />
       </div>
 
       <Button type="submit" disabled={isLoading} className="w-full sm:w-auto" size="lg">

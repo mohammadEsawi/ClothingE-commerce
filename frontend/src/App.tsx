@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // Layouts
@@ -58,8 +57,6 @@ function PageWrapper({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const { i18n } = useTranslation()
-
   return (
     <AnimatePresence mode="wait">
       <Routes>
