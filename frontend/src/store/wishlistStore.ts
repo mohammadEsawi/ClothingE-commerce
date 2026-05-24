@@ -9,17 +9,12 @@ interface WishlistState {
   removeFromWishlist: (productId: number) => void
   toggleWishlist: (product: Product) => void
   clearWishlist: () => void
-  count: number
 }
 
 export const useWishlistStore = create<WishlistState>()(
   persist(
     (set, get) => ({
       productIds: [],
-
-      get count() {
-        return get().productIds.length
-      },
 
       isInWishlist: (productId: number) => {
         return get().productIds.includes(productId)
